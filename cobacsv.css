@@ -1,0 +1,63 @@
+html,
+body,
+#viewDiv {
+  padding: 0;
+  margin: 0;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+#info,
+#gridDisplay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 35%;
+  background-color: white;
+  border-color: grey;
+  width: 100%;
+  font-family: "Avenir Next W00", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+}
+
+#gridDisplay {
+  z-index: 80;
+}
+
+#info {
+  z-index: 90;
+  font-size: 16px;
+  padding-left: 20px;
+}
+
+#info * {
+  padding-right: 20px;
+}
+
+.info {
+  line-height: 20px;
+  padding-left: 5px !important;
+}
+
+.dgrid-header,
+.dgrid-header-row {
+  background-color: #eee;
+  color: #57585a;
+}
+
+.dgrid-row-even {
+  background-color: #f7f8f8;
+}
+
+.dgrid-row-odd {
+  background-color: #efefef;
+}
+
+.dgrid-selected {
+  background: #b4daf5;
+}
+
+.dgrid-row {
+  border: none;
+}

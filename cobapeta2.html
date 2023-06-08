@@ -10,7 +10,10 @@
       rel="stylesheet"
       href="https://js.arcgis.com/4.26/esri/themes/light/main.css"
     />
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.1/css/fontawesome.min.css" integrity="sha384-QYIZto+st3yW+o8+5OHfT6S482Zsvz2WfOzpFSXMF9zqeLcFV0/wlZpMtyFcZALm" crossorigin="anonymous"> -->
+    
     <link rel="stylesheet" href="cobapeta2_style.css" />
+    <script src="https://kit.fontawesome.com/c10977dc75.js" crossorigin="anonymous"></script>
     <script src="https://js.arcgis.com/4.26/"></script>
     <script src="cobapeta2_script.js"></script>
   </head>
@@ -28,7 +31,11 @@
 
       <div id="checkboxContainer"></div>
 
-      <div id="viewDiv" class="esri-widget"></div>
+      <div id="viewDiv" class="esri-widget">
+        <button id="exportButton"><i class="fas fa-regular fa-download"></i></button>
+      </div>
+      
+
     </div>
 
     <!-- MAKE SELECT OPTION DINAS -->

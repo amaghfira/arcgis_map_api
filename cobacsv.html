@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="cobacsv.js"></script>
+    <link rel="stylesheet" href="cobacsv.css">
+    <link
+      rel="stylesheet"
+      href="https://js.arcgis.com/4.26/esri/themes/light/main.css"
+    />
+    <script src="https://js.arcgis.com/4.26/"></script>
+</head>
+<body>
+    <div id="viewDiv">
+        <div id="select-by-polygon" class="esri-widget esri-widget--button esri-widget esri-interactive" title="Select features by polygon">
+          <span class="esri-icon-checkbox-unchecked"></span>
+        </div>
+        <div id="btn-export" class="esri-widget esri-widget--button esri-widget esri-interactive" title="Export to CSV">
+          <span class="esri-icon-download"></span>
+        </div>
+        <div id="info">
+          <span class="info">
+              <b>Instructions</b>
+            </span>
+          <br />
+          <ul>
+            <li> Select features using select by polygon tool. Attributes of selected features will be displayed here.</li>
+            <br />
+            <li> Click on a row to select a feature associated with it or click on a feature to display its popup.</li>
+          </ul>
+        </div>
+        <div id="gridDisplay">
+          <span class="info" id="featureCount"></span>
+          <div id="grid"></div>
+        </div>
+      </div>
+</body>
+</html>

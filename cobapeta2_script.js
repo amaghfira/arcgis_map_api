@@ -51,7 +51,7 @@ fetch(url)
             .then((response) => response.json())
             .then((jsonPeta) => {
             const fields = jsonPeta.fields;
-            console.log(fields[1]["name"]);
+            console.log(jsonPeta.fields[1]);
 
             // ----------  //
             // CREATE MAP //
@@ -118,6 +118,85 @@ fetch(url)
                     return fieldInfos;
                 }
 
+                // -------------------------
+                // Export to csv function 
+                const exportButton = document.getElementById("exportButton");
+                exportButton.addEventListener("click", exportToCSV);
+
+                function exportToCSV() {
+                    const selectedPolygonURL = `https://arcgis-spasial.kaltimprov.go.id/arcgis/rest/services/${selectedValue}/MapServer/${selectedPolygonValue}/query?where=1=1&f=json`;
+                
+                    fetch(selectedPolygonURL)
+                        .then((response) => response.json())
+                        .then((jsonData) => {
+                        const features = jsonData.features;
+                        const csvData = convertFeaturesToCSV(features);
+                        downloadCSV(csvData, "data.csv");
+                        })
+                        .catch((error) => {
+                        console.log("Error fetching JSON data:", error);
+                        });
+                }
+                
+                function convertFeaturesToCSV(features) {
+                    const csvRows = [];
+                    const fieldsSet = new Set();
+                    
+                    // Extract field names from all features
+                    features.forEach((feature) => {
+                        const attributes = feature.attributes;
+                        const featureFields = Object.keys(attributes);
+                        featureFields.forEach((field) => fieldsSet.add(field));
+                    });
+
+                    // Convert set of field names to an array
+                    const fields = Array.from(fieldsSet);
+
+                    // Add header row
+                    const headerRow = fields.join(",");
+                    csvRows.push(headerRow);
+                  
+                    // Add data rows
+                    features.forEach((feature) => {
+                      const attributes = feature.attributes;
+                      const rowData = fields.map((field) => attributes[field]);
+                      const csvRow = rowData.join(";");
+                      csvRows.push(csvRow);
+                    });
+                  
+                    // Combine rows into a single CSV string
+                    const csvData = csvRows.join("\n");
+                    return csvData;
+                }
+                  
+                  
+                
+                function downloadCSV(csvData, fileName) {
+                    const blob = new Blob([csvData], { type: "text/csv;charset=utf-8;" });
+                    
+                    // Check if the browser supports the `navigator.msSaveBlob` method (for IE)
+                    if (navigator.msSaveBlob) {
+                        navigator.msSaveBlob(blob, fileName);
+                    } else {
+                        // Create a temporary link element
+                        const link = document.createElement("a");
+                        if (link.download !== undefined) {
+                        // Set the download attribute and filename
+                        link.setAttribute("href", URL.createObjectURL(blob));
+                        link.setAttribute("download", fileName);
+                    
+                        // Append the link to the body and trigger the download
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        }
+                    }
+                }
+                  
+                // end export to csv functions 
+                // -----------------------------
+
+                // get image layer
                 const updateMapImageLayer = () => {
                     if (imageLayer) {
                       map.remove(imageLayer);
