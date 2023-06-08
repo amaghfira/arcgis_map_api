@@ -1,0 +1,207 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="initial-scale=1,maximum-scale=1,user-scalable=no"
+    />
+    <title>
+      ArcGIS MAP DINAS
+    </title>
+    <link rel="stylesheet" href="https://js.arcgis.com/4.26/esri/themes/light/main.css"/>
+    <link rel="stylesheet" href="cobapeta2_style.css">
+    <script src="https://js.arcgis.com/4.26/"></script>
+
+    <!-- CREATE MAP -->
+
+    <script>
+      require(["esri/Map", "esri/views/MapView", "esri/layers/FeatureLayer"], (
+        Map,
+        MapView,
+        FeatureLayer
+      ) => {
+        const map = new Map({
+          basemap: "streets-navigation-vector",
+        });
+
+        const view = new MapView({
+          container: "viewDiv",
+          map: map,
+          center: [113.7884531, 0.0984726],
+          zoom: 5,
+        });
+
+        /********************
+         * Add feature layer
+         ********************/
+        // sampling of breweries
+        const featureLayer = new FeatureLayer({
+          url: "https://arcgis-spasial.kaltimprov.go.id/arcgis/rest/services/Publikasi/DISDIKBUD/MapServer/0",
+          popupTemplate: {
+            title: "{name}",
+            lastEditInfoEnabled: false,
+            actions: [
+              {
+                id: "find-brewery",
+                image:
+                  "https://developers.arcgis.com/javascript/latest/sample-code/popup-custom-action/live/beer.png",
+                title: "Peta",
+              },
+            ],
+            content: [
+              {
+                type: "fields",
+                fieldInfos: [
+                  {
+                    fieldName: "nama_sekol",
+                  },
+                  {
+                    fieldName: "jalan",
+                    label: "jalan",
+                  },
+                  {
+                    fieldName: "desa",
+                    label: "desa",
+                  },
+                  {
+                    fieldName: "kecamatan",
+                    label: "kecamatan",
+                  },
+                  {
+                    fieldName: "no_telepon",
+                  },
+                  {
+                    fieldName: "email",
+                  },
+                ],
+              },
+            ],
+          },
+        });
+
+        map.add(featureLayer);
+
+        view.when(() => {
+          // Watch for when features are selected
+          view.popup.watch("selectedFeature", (graphic) => {
+            if (graphic) {
+              // Set the action's visible property to true if the 'website' field value is not null, otherwise set it to false
+              const graphicTemplate = graphic.getEffectivePopupTemplate();
+              graphicTemplate.actions.items[0].visible = graphic.attributes
+                .website
+                ? true
+                : false;
+            }
+          });
+
+          const popup = view.popup;
+          popup.viewModel.on("trigger-action", (event) => {
+            if (event.action.id === "find-brewery") {
+              const attributes = popup.viewModel.selectedFeature.attributes;
+              // Get the 'website' field attribute
+              const info = attributes.website;
+              // Make sure the 'website' field value is not null
+              if (info) {
+                // Open up a new browser using the URL value in the 'website' field
+                window.open(info.trim());
+              }
+            }
+          });
+        });
+      });
+    </script>
+  </head>
+
+  <body class="light">
+    <div class="container">
+      <h1>ArcGIS REST API Select Option</h1>
+      <select name="" id="mapSelect">
+        <option class="mapOption">--- Pilih Dinas ---</option>
+      </select>
+
+      <select name="" id="polygonSelect">
+        <option class="polygonOption">--- Pilih Poligon ---</option>
+      </select>
+      
+      <div id="checkboxContainer"></div>
+
+      <div id="viewDiv" class="esri-widget"></div>
+    </div>
+
+    <!-- MAKE SELECT OPTION DINAS -->
+    <script>
+      // ---------- GET JSON ------------------
+      // Replace 'url' with the actual URL of your JSON data
+      const url =
+        "https://arcgis-spasial.kaltimprov.go.id/arcgis/rest/services/Publikasi?f=pjson";
+
+      fetch(url)
+        .then((response) => response.json())
+        .then((data) => {
+          // Data is the parsed JSON object
+          const services = data.services;
+
+          // Create a select element
+          const selectElement = document.getElementById("mapSelect");
+          const checkboxContainer =
+            document.getElementById("checkboxContainer");
+
+          // event listener for element change
+          selectElement.addEventListener("change", () => {
+            // Clear checkbox container
+            checkboxContainer.innerHTML = "";
+
+            // Get the selected value
+            const selectedValue = selectElement.value;
+
+            // Extract the desired name from the service name
+            const extractedName = selectedValue.split("/")[1];
+            console.log(selectedValue);
+
+            // Generate the URL for the selected service
+            const selectedServiceURL = `https://arcgis-spasial.kaltimprov.go.id/arcgis/rest/services/${selectedValue}/MapServer?f=pjson`;
+            console.log(selectedServiceURL);
+
+            // Fetch JSON data from the selected service URL
+            fetch(selectedServiceURL)
+              .then((response) => response.json())
+              .then((jsonData) => {
+                // Process the fetched JSON data here
+                // For example, create checkboxes based on the data
+                const layers = jsonData.layers;
+                console.log(jsonData);
+                layers.forEach((layer) => {
+                  const checkbox = document.createElement("input");
+                  checkbox.type = "checkbox";
+                  checkbox.id = layer.id;
+                  checkbox.name = layer.name;
+                  checkbox.value = layer.id;
+
+                  const label = document.createElement("label");
+                  label.htmlFor = layer.id;
+                  label.textContent = layer.name;
+
+                  checkboxContainer.appendChild(checkbox);
+                  checkboxContainer.appendChild(label);
+                  checkboxContainer.appendChild(document.createElement("br"));
+                });
+              })
+              .catch((error) => {
+                console.log("Error fetching JSON data:", error);
+              });
+          });
+
+          // Iterate over the services array and create an option for each service
+          services.forEach((service) => {
+            const optionElement = document.createElement("option");
+            optionElement.value = service.name;
+            optionElement.text = service.name;
+            selectElement.appendChild(optionElement);
+          });
+        })
+        .catch((error) => {
+          console.log("Error fetching JSON data:", error);
+        });
+    </script>
+  </body>
+</html>
